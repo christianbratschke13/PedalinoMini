@@ -4898,7 +4898,7 @@ void get_update_page(unsigned int start, unsigned int len) {
   page += F("</div></b></div>");
   page += F("<div class='col-4'>");
   page += F("Latest public version: <b>");
-  page += F("<div id='latestFirmwareVersion' w3-include-html='https://raw.githubusercontent.com/alf45tar/PedalinoMini/master/firmware/");
+  page += F("<div id='latestFirmwareVersion' w3-include-html='https://raw.githubusercontent.com/christianbratschke13/PedalinoMini/master/firmware/");
   page += xstr(PLATFORMIO_ENV);
   page += F("/version.txt?");
   page += (rand() % (999999 - 100000 + 1) + 100000);
@@ -4923,7 +4923,7 @@ void get_update_page(unsigned int start, unsigned int len) {
   page += F("</div>");
   page += F("<div class='col-4'>");
   page += F("<small>");
-  page += F("<div id='latestFirmwareVersion' w3-include-html='https://raw.githubusercontent.com/alf45tar/PedalinoMini/master/firmware/");
+  page += F("<div id='latestFirmwareVersion' w3-include-html='https://raw.githubusercontent.com/christianbratschke13/PedalinoMini/master/firmware/");
   page += xstr(PLATFORMIO_ENV);
   page += F("/firmware.bin.md5?");
   page += (rand() % (999999 - 100000 + 1) + 100000);
