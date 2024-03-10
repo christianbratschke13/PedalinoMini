@@ -101,7 +101,7 @@ String get_latest_firmware_version(void) {
       // Add a scoping block for HTTPClient https to make sure it is destroyed before WiFiClientSecure *client is
       HTTPClient https;
 
-      url = F("https://raw.githubusercontent.com/alf45tar/PedalinoMini/master/firmware/");
+      url = F("https://raw.githubusercontent.com/christianbratschke13/PedalinoMini/master/firmware/");
       url += xstr(PLATFORMIO_ENV);
       url += F("/version.txt?");
       url += String(rand());
@@ -157,7 +157,7 @@ String get_firmware_md5(void) {
       // Add a scoping block for HTTPClient https to make sure it is destroyed before WiFiClientSecure *client is
       HTTPClient https;
 
-      url = F("https://raw.githubusercontent.com/alf45tar/PedalinoMini/");
+      url = F("https://raw.githubusercontent.com/christianbratschke13/PedalinoMini/");
       url += F(VERSION);
       url += F("/firmware/");
       url += xstr(PLATFORMIO_ENV);
@@ -260,7 +260,7 @@ void ota_http_update()
 {
   if (!wifiEnabled) return;
 
-  url = F("https://raw.githubusercontent.com/alf45tar/PedalinoMini/master/firmware/");
+  url = F("https://raw.githubusercontent.com/christianbratschke13/PedalinoMini/master/firmware/");
   url += xstr(PLATFORMIO_ENV);
   url += F("/");
   url += xstr(PLATFORMIO_ENV);
