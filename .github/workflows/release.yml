@@ -32,27 +32,27 @@ jobs:
 
     - name: Run PlatformIO build on selected platforms
       run: |
-        pio run -e esp32doit-devkit-v1
-        pio run -t buildfs -e esp32doit-devkit-v1
+        pio run -e esp32dev
+        pio run -t buildfs -e esp32dev
 
     - name: Copy binary files
       run: |
-        rm -rf ./firmware/esp32doit-devkit-v1/*
-        echo ${{ github.event.inputs.tag }} > ./firmware/esp32doit-devkit-v1/version.txt
+        rm -rf ./firmware/esp32dev/*
+        echo ${{ github.event.inputs.tag }} > ./firmware/esp32dev/version.txt
         python ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32 merge_bin \
-                                                                -o ./firmware/esp32doit-devkit-v1/esp32doit-devkit-v1-${{ github.event.inputs.tag }}-firmware.bin \
+                                                                -o ./firmware/esp32dev/esp32dev-${{ github.event.inputs.tag }}-firmware.bin \
                                                                 --flash_mode dio \
                                                                 --flash_freq 80m \
                                                                 --flash_size 4MB \
                                                                 0x1000 ~/.platformio/packages/framework-arduinoespressif32/tools/sdk/bin/bootloader_dio_80m.bin \
-                                                                0x8000 /tmp/PedalinoMini/build/esp32doit-devkit-v1/partitions.bin \
+                                                                0x8000 /tmp/PedalinoMini/build/esp32dev/partitions.bin \
                                                                 0xe000 ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin \
-                                                                0x10000 /tmp/PedalinoMini/build/esp32doit-devkit-v1/firmware.bin \
-                                                                0x3c0000 /tmp/PedalinoMini/build/esp32doit-devkit-v1/spiffs.bin
-        cp ./manifest/template_esp32.json ./firmware/esp32doit-devkit-v1/esp32doit-devkit-v1-${{ github.event.inputs.tag }}.json
-        sed -i 's/x.y.z/${{ github.event.inputs.tag }}/g' ./firmware/esp32doit-devkit-v1/esp32doit-devkit-v1-${{ github.event.inputs.tag }}.json
-        sed -i 's/xxx/esp32doit-devkit-v1/g'              ./firmware/esp32doit-devkit-v1/esp32doit-devkit-v1-${{ github.event.inputs.tag }}.json
-        md5sum /tmp/PedalinoMini/build/esp32doit-devkit-v1/firmware.bin | head -c 32 > ./firmware/esp32doit-devkit-v1/firmware.bin.md5
+                                                                0x10000 /tmp/PedalinoMini/build/esp32dev/firmware.bin \
+                                                                0x3c0000 /tmp/PedalinoMini/build/esp32dev/spiffs.bin
+        cp ./manifest/template_esp32.json ./firmware/esp32dev/esp32dev-${{ github.event.inputs.tag }}.json
+        sed -i 's/x.y.z/${{ github.event.inputs.tag }}/g' ./firmware/esp32dev/esp32dev-${{ github.event.inputs.tag }}.json
+        sed -i 's/xxx/esp32doit-devkit-v1/g'              ./firmware/esp32dev/esp32dev-${{ github.event.inputs.tag }}.json
+        md5sum /tmp/PedalinoMini/build/esp32dev/firmware.bin | head -c 32 > ./firmware/esp32dev/firmware.bin.md5
 
     - name: Commit and push firmware ${{ github.event.inputs.tag }} files
       run: |

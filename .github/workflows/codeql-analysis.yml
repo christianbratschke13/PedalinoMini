@@ -83,8 +83,8 @@ jobs:
 
     - name: Run PlatformIO build on selected platforms
       run: |
-        pio run -e esp32doit-devkit-v1
-        pio run -t buildfs -e esp32doit-devkit-v1
+        pio run -e esp32dev
+        pio run -t buildfs -e esp32dev
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
