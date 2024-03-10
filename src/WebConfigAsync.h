@@ -4428,6 +4428,62 @@ void get_options_page(unsigned int start, unsigned int len) {
   if (trim_page(start, len)) return;
 
   page += F("<div class='row'>");
+  page += F("<div class='col-md-6 col-12 mb-3'>");
+  page += F("<div class='card h-100'>");
+  page += F("<h5 class='card-header'>");
+  page +=
+      F("<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' "
+        "fill='currentColor' class='bi bi-hdd-network' viewBox='0 0 20 20'>");
+  page += F("<path d='M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 4.5a.5.5 0 1 1-1 "
+            "0 .5.5 0 0 1 1 0z'/>");
+  page +=
+      F("<path d='M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1a2 2 0 0 1-2 "
+        "2H8.5v3a1.5 1.5 0 0 1 1.5 1.5h5.5a.5.5 0 0 1 0 1H10A1.5 1.5 0 0 1 8.5 "
+        "14h-1A1.5 1.5 0 0 1 6 12.5H.5a.5.5 0 0 1 0-1H6A1.5 1.5 0 0 1 7.5 "
+        "10V7H2a2 2 0 0 1-2-2V4zm1 0v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 "
+        "0 0-1-1H2a1 1 0 0 0-1 1zm6 7.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 "
+        ".5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5z'/>");
+  page += F("</svg> ");
+  page += F(" RTP-MIDI</h5>");
+  page += F("<div class='card-body'>");
+  page += F("<div class='form-check form-switch'>");
+  page += F("<input class='form-check-input' type='checkbox' id='rtpInitiator' name='rtpinitiator'");
+  if (rtpInitiator) page += F(" checked");
+  page += F(">");
+  page += F("<label class='form-check-label' for='rtpInitiator'>RTP Initiator</label>");
+  page += F("</div>");
+  page += F("<small id='rtpInitiatorHelpBlock' class='form-text text-muted'>");
+  page += F("Initiates a session to the remote address below.");
+  page += F("</small>");
+  page += F("<div class='row g-1'>");
+  page += F("<div class='w-75'>");
+  page += F("<div class='form-floating'>");
+  page += F("<input class='form-control' type='text' maxlength='32' id='rtpRemoteHost' name='rtpremotehost' value='");
+  page += rtpRemoteHost;
+  page += F("'>");
+  page += F("<label for='rtpremotehost'>Remote Host/IP</label>");
+  page += F("</div>");
+  page += F("</div>");
+  page += F("<div class='w-25'>");
+  page += F("<div class='form-floating'>");
+  page += F("<input class='form-control' type='number' min='0' max='65535' id='rtpRemotePort' name='rtpremoteport' value='");
+  page += rtpRemotePort;
+  page += F("'>");
+  page += F("<label for='rtpremoteport'>Port</label>");
+  page += F("</div>");
+  page += F("</div>");
+  page += F("<small class='form-text text-muted'>");
+  page += F("RTP remote host name without .local, or IP address, and port to initiate RTP MIDI Sessions.<br>");
+  page += F("</small>");
+  page += F("</div>");
+  page += F("</div>");
+  page += F("</div>");
+  page += F("</div>");
+  page += F("</div>");
+
+  if (trim_page(start, len)) return;
+
+  page += F("<div class='row'>");
   page += F("<div class='col-auto me-auto'>");
   page += F("<button type='submit' name='action' value='apply' class='btn btn-primary btn-sm'>");
   page += F("<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-check2-circle' viewBox='0 0 16 16'>");
@@ -4465,6 +4521,20 @@ void get_options_page(unsigned int start, unsigned int len) {
   page += F("</div>");
   page += F("</div>");
 
+  page += F("<script>");
+
+  page += F("const rtpInitiator = document.querySelector('#rtpInitiator');");
+  page += F("rtpInitiator.addEventListener('change', toggleInputs);");
+
+  page += F("function toggleInputs() {");
+  page += F("const rtpRemoteHost = document.querySelector('#rtpRemoteHost');");
+  page += F("const rtpRemotePort = document.querySelector('#rtpRemotePort');");
+  page += F("rtpRemoteHost.disabled = !rtpInitiator.checked;");
+  page += F("rtpRemotePort.disabled = !rtpInitiator.checked;");
+  page += F("}");
+  page += F("toggleInputs();");
+
+  page += F("</script>");
   page += F("</form>");
 
   get_footer_page();
@@ -6061,6 +6131,37 @@ void http_handle_post_options(AsyncWebServerRequest *request) {
     oscUDPout.close();
     oscUDPout.connect(oscRemoteIp, oscRemotePort);
   }
+
+  bool newRtpInitiator = (request->arg("rtpinitiator") == checked);
+  bool rtpReconnect = false;
+  if (newRtpInitiator != rtpInitiator) {
+    rtpInitiator = newRtpInitiator;
+    rtpReconnect = true;
+  }
+
+  if (request->arg("rtpremotehost") != rtpRemoteHost) {
+    rtpRemoteHost = request->arg("rtpremotehost");
+    if (!rtpRemoteIp.fromString(rtpRemoteHost)) {
+      rtpRemoteIp = MDNS.queryHost(rtpRemoteHost);
+      if (rtpRemoteIp.toString().equals("0.0.0.0")) {
+        DPRINT("Host %s not found via mDNS. \n", rtpRemoteHost.c_str());
+      }
+      else {
+        DPRINT("Resolved host %s to %s via mDNS.\n", rtpRemoteHost.c_str(), rtpRemoteIp.toString().c_str());
+      }
+    }
+    rtpReconnect = true;
+  }
+
+  if (request->arg("rtpremoteport").toInt() != rtpRemotePort) {
+    rtpRemotePort = request->arg("rtpremoteport").toInt();
+    rtpReconnect = true;
+  }
+
+  if (rtpReconnect) {
+    //oscUDPout.connect(oscRemoteIp, oscRemotePort);
+  }
+
 
   if (request->arg("action").equals("apply")) {
     alert = F("Changes applied. Changes will be lost on next reboot or on profile switch if not saved.");

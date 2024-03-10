@@ -137,6 +137,19 @@
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 65535
+                    },
+                    "RTPInitiator": {
+                        "type": "boolean"
+                    },
+                    "RTPRemoteHost": {
+                        "type": "string",
+                        "minLength": 0,
+                        "maxLength": 253
+                    },
+                    "RTPRemotePort": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 65535
                     }
                 }
             }

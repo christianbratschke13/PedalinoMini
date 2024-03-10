@@ -339,6 +339,9 @@ void spiffs_save_config(const String& filename, bool saveActions = true, bool sa
     jo["OSCLocalPort"]        = oscLocalPort;
     jo["OSCRemoteHost"]       = oscRemoteHost;
     jo["OSCRemotePort"]       = oscRemotePort;
+    jo["RTPInitiator"]        = rtpInitiator;
+    jo["RTPRemoteHost"]       = rtpRemoteHost;
+    jo["RTPRemotePort"]       = rtpRemotePort;
     JsonArray jladder = jdoc.createNestedArray("Ladder");
     for (byte s = 0; s < LADDER_STEPS + 1; s++) {
       JsonObject jo = jladder.createNestedObject();
@@ -597,6 +600,9 @@ void spiffs_load_config(const String& filename, bool loadActions = true, bool lo
           oscLocalPort        = jo["OSCLocalPort"]                                | oscLocalPort;
           oscRemoteHost       = jo["OSCRemoteHost"]                               | oscRemoteHost;
           oscRemotePort       = jo["OSCRemotePort"]                               | oscRemotePort;
+          rtpInitiator        = jo["RTPInitiator"]                                | rtpInitiator;
+          rtpRemoteHost       = jo["RTPRemoteHost"]                               | rtpRemoteHost;
+          rtpRemotePort       = jo["RTPRemotePort"]                               | rtpRemotePort;
         }
       }
     }
@@ -1510,6 +1516,27 @@ void eeprom_update_osc_parameters(unsigned int localport = 8000, String remoteho
 #endif
 }
 
+void eeprom_update_rtp_parameters(bool initiator = false, String remotehost = "255.255.255.255", unsigned int remoteport = 5004)
+{
+#ifdef NVS
+  DPRINT("Updating NVS ... ");
+  preferences.begin("Global", false);
+  preferences.putBool("RTPInitiator", initiator);
+  preferences.putString("RTPRemoteHost", remotehost);
+  preferences.putUInt("RTPRemotePort", remoteport);
+  preferences.end();
+  DPRINT("done\n");
+  DPRINT("[NVS][Global[RTPInitiator]:  %d\n", initiator);
+  DPRINT("[NVS][Global[RTPRemoteHost]: %s\n", remotehost.c_str());
+  DPRINT("[NVS][Global[RTPRemotePort]: %d\n", remoteport);
+#else
+  rtpInitiator = initiator;
+  rtpRemoteHost = remotehost;
+  rtpRemotePort = remoteport;
+  spiffs_save_globals();
+#endif
+}
+
 void eeprom_update_profile(byte profile = currentProfile)
 {
 #ifdef NVS
@@ -1643,6 +1670,9 @@ void eeprom_read_global()
     oscLocalPort        = preferences.getUInt("OSCLocalPort");
     oscRemoteHost       = preferences.getString("OSCRemoteHost");
     oscRemotePort       = preferences.getUInt("OSCRemotePort");
+    rtpInitiator        = preferences.getBool("RTPInitiator");
+    rtpRemoteHost       = preferences.getString("RTPRemoteHost");
+    rtpRemotePort       = preferences.getUInt("RTPRemotePort");
     preferences.getBytes("Ladder", ladderLevels, sizeof(ladderLevels));
     preferences.end();
     DPRINT("done\n");
@@ -1674,6 +1704,9 @@ void eeprom_read_global()
     DPRINT("[NVS][Global][OSCLocalPort]:     %d\n", oscLocalPort);
     DPRINT("[NVS][Global][OSCRemoteHost]:    %s\n", oscRemoteHost.c_str());
     DPRINT("[NVS][Global][OSCRemotePort]:    %d\n", oscRemotePort);
+    DPRINT("[NVS][Global][RTPInitiator]:     %d\n", rtpInitiator);
+    DPRINT("[NVS][Global][RTPRemoteHost]:    %s\n", rtpRemoteHost.c_str());
+    DPRINT("[NVS][Global][RTPRemotePort]:    %d\n", rtpRemotePort);
     for (byte i = 0; i < LADDER_STEPS; i++) {
       DPRINT("[NVS][Global][Ladder]:           Ladder %d Level %d\n", i + 1, ladderLevels[i]);
     }
@@ -1788,6 +1821,7 @@ void eeprom_update_globals()
   eeprom_update_encoder_sensitivity(encoderSensitivity);
   eeprom_update_leds_brightness(ledsOnBrightness, ledsOffBrightness);
   eeprom_update_osc_parameters(oscLocalPort, oscRemoteHost, oscRemotePort);
+  eeprom_update_rtp_parameters(rtpInitiator, rtpRemoteHost, rtpRemotePort);
 #else
   spiffs_save_globals();
 #endif
@@ -1835,6 +1869,7 @@ void eeprom_initialize()
   eeprom_update_rgb_order();
   eeprom_update_leds_brightness();
   eeprom_update_osc_parameters();
+  eeprom_update_rtp_parameters();
   for (byte p = 0; p < PROFILES; p++)
     eeprom_update_profile(p);
 #else
