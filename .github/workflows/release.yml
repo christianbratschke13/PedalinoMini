@@ -37,7 +37,7 @@ jobs:
 
     - name: Copy binary files
       run: |
-        ls ~/.platformio/packages/framework-arduinoespressif32@3.10006.210326/tools/sdk/bin/
+        ls ~/.platformio/packages/
         rm -rf ./firmware/esp32doit-devkit-v1/*
         echo ${{ github.event.inputs.tag }} > ./firmware/esp32doit-devkit-v1/version.txt
         python ~/.platformio/packages/tool-esptoolpy/esptool.py --chip esp32 merge_bin \
