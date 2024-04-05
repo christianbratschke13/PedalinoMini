@@ -10,6 +10,7 @@ __________           .___      .__  .__                 _____  .__       .__    
  */
 
 #ifdef WIFI
+//#define APPLEMIDI_INITIATOR
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>

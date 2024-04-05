@@ -90,6 +90,7 @@ void start_services()
     MDNS.addService("_apple-midi", "_udp", 5004);
     MDNS.addService("_osc",        "_udp", oscLocalPort);
     MDNS.addService("_http",       "_tcp", 80);
+    MDNS.addService("telnet",      "tcp",  23);
   }
 
   // OTA update init

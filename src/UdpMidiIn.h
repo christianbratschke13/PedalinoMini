@@ -13,6 +13,7 @@ ________________    ___
  */
 
 #ifdef WIFI
+//#define APPLEMIDI_INITIATOR
 #include <AppleMIDI.h>
 #include <AsyncUDP.h>
 #include <OSCBundle.h>
@@ -21,6 +22,7 @@ ________________    ___
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <ipMIDI.h>
+#include <ESPmDNS.h>
 
 #endif // WIFI
 
@@ -490,12 +492,23 @@ void apple_midi_start() {
   RTP_MIDI.setHandleSystemReset(OnAppleMidiReceiveReset);
 
   // Initiate the session if initiator mode active
-  if (rtpInitiator) {
-    if (rtpRemoteIp.toString() == String(IPADDR_NONE) || !rtpRemotePort)
-      return;
+  //if (rtpInitiator) {
+  //  if (rtpRemoteIp.toString() == String(IPADDR_NONE) || !rtpRemotePort)
+  //    return;
+  //}
 
-    // AppleRTP_MIDI.sendInvite(rtpRemoteIp, DEFAULT_CONTROL_PORT);
-  }
+  /*if (!rtpRemoteIp.fromString(rtpRemoteHost)) {
+      rtpRemoteIp = MDNS.queryHost(rtpRemoteHost);
+      if (rtpRemoteIp.toString().equals("0.0.0.0")) {
+        DPRINT("Host %s not found via mDNS. \n", rtpRemoteHost.c_str());
+      }
+      else {
+        DPRINT("Resolved host %s to %s via mDNS.\n", rtpRemoteHost.c_str(), rtpRemoteIp.toString().c_str());
+      }
+    }
+
+    DPRINT("Sending invite to %s on port %d\n", rtpRemoteIp.toString().c_str(), DEFAULT_CONTROL_PORT);
+    AppleRTP_MIDI.sendInvite(rtpRemoteIp, DEFAULT_CONTROL_PORT);*/
 
   // Listen to all channels
   RTP_MIDI.begin(MIDI_CHANNEL_OMNI);

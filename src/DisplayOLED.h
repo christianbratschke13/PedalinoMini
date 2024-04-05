@@ -582,20 +582,22 @@ void topOverlay(OLEDDisplay *display, OLEDDisplayUiState *state) {
 #ifdef BATTERY
     display->setTextAlignment(TEXT_ALIGN_RIGHT);
     display->setFont(batteryIndicator);
-    if (batteryVoltage > 4300)
-      display->drawString(128, 0, String((millis() >> 10) % 4));
-    else if (batteryVoltage > 3800)
-      display->drawString(128, 0, String(4));
-    else if (batteryVoltage > 3600)
+    // TODO: Show loading animation
+    /* display->drawString(128, 0, String((millis() >> 10) % 4)); */
+    /*if (batteryVoltage > 4300)
+      display->drawString(128, 0, String((millis() >> 10) % 4));*/
+    if (batteryVoltage > 3800)
       display->drawString(128, 0, String(3));
-    else if (batteryVoltage > 3400)
+    else if (batteryVoltage > 3600)
       display->drawString(128, 0, String(2));
-    else if (batteryVoltage > 3200)
+    else if (batteryVoltage > 3400)
       display->drawString(128, 0, String(1));
+    else if (batteryVoltage > 3200)
+      display->drawString(128, 0, String(0));
     else if ((millis() >> 10) % 2)
       display->drawString(128, 0, String(0));
     else
-      display->drawString(128, 0, String(4));
+      display->drawString(128, 0, String(3));
 #endif
   }
 

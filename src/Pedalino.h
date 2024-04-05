@@ -128,7 +128,8 @@ const byte pinA[] = {GPIO_NUM_36, GPIO_NUM_39, GPIO_NUM_34, GPIO_NUM_35, GPIO_NU
 #define DIN_MIDI_IN_PIN       GPIO_NUM_15
 #define DIN_MIDI_OUT_PIN      GPIO_NUM_4
 #define BATTERY_PIN           GPIO_NUM_36   // GPIO_NUM_32 to GPIO_NUM_39 only
-#define FASTLEDS_DATA_PIN     GPIO_NUM_5
+#define FASTLEDS_DATA_PIN     GPIO_NUM_2
+#define BATTERY_ADC_EN        GPIO_NUM_21
 #endif
 
 #define PIN_D(x)          pinD[x]
